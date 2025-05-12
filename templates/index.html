@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentoring Environment</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let rewardHistory = []; // Store rewards over time
+
+        async function takeAction(action = null) {
+            const response = await fetch("/step", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action })
+            });
+            const data = await response.json();
+            updateUI(data);
+            if (data.done) {
+                alert("Course completed!");
+            }
+        }
+
+        async function resetEnv() {
+            const response = await fetch("/reset", { method: "POST" });
+            const data = await response.json();
+            updateUI(data);
+        }
+
+        function updateUI(data) {
+            document.getElementById("state").innerText = "State: " + data.state;
+            document.getElementById("reward").innerText = "Reward: " + data.reward;
+            document.getElementById("done").innerText = "Done: " + data.done;
+
+            // Update progress bars
+            document.getElementById("completed_lessons").value = data.state[0];
+            document.getElementById("quiz_scores").value = data.state[1];
+            document.getElementById("motivation_level").value = data.state[2];
+            document.getElementById("time_spent").value = data.state[3];
+            document.getElementById("engagement_level").value = data.state[4];
+            document.getElementById("difficulty_level").value = data.state[5];
+
+            // Log rewards and update the chart
+            rewardHistory.push(data.reward);
+            rewardChart.data.labels.push(rewardHistory.length); // Add step number
+            rewardChart.data.datasets[0].data = rewardHistory; // Update rewards
+            rewardChart.update(); // Refresh the chart
+        }
+
+        // Initialize the chart
+        const rewardChart = new Chart(document.getElementById("rewardChart"), {
+            type: "line",
+            data: {
+                labels: [], // X-axis labels (steps)
+                datasets: [{
+                    label: "Rewards",
+                    data: [], // Y-axis data (rewards)
+                    borderColor: "blue",
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { title: { display: true, text: "Steps" } },
+                    y: { title: { display: true, text: "Reward" } }
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Mentoring Environment</h1>
+    <p id="state">State: </p>
+    <p id="reward">Reward: </p>
+    <p id="done">Done: </p>
+
+    <!-- Progress Bars -->
+    <div>
+        <label>Completed Lessons:</label>
+        <progress id="completed_lessons" value="0" max="100"></progress>
+    </div>
+    <div>
+        <label>Quiz Scores:</label>
+        <progress id="quiz_scores" value="0" max="100"></progress>
+    </div>
+    <div>
+        <label>Motivation Level:</label>
+        <progress id="motivation_level" value="100" max="100"></progress>
+    </div>
+    <div>
+        <label>Time Spent:</label>
+        <progress id="time_spent" value="0" max="100"></progress>
+    </div>
+    <div>
+        <label>Engagement Level:</label>
+        <progress id="engagement_level" value="50" max="100"></progress>
+    </div>
+    <div>
+        <label>Difficulty Level:</label>
+        <progress id="difficulty_level" value="5" max="10"></progress>
+    </div>
+
+    <!-- Reward Chart -->
+    <div>
+        <h2>Reward History</h2>
+        <canvas id="rewardChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Buttons -->
+    <button type="button" onclick="takeAction(0)">Suggest Topic</button>
+    <button type="button" onclick="takeAction(1)">Assign Quiz</button>
+    <button type="button" onclick="takeAction(2)">Provide Feedback</button>
+    <button type="button" onclick="takeAction(3)">Assign Homework</button>
+    <button type="button" onclick="takeAction(4)">Schedule Meeting</button>
+    <button type="button" onclick="takeAction()">Let Agent Decide</button>
+    <button type="button" onclick="resetEnv()">Reset Environment</button>
+</body>
+</html>
