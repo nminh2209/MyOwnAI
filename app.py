@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from coursegenerator_env import MentoringEnv
+from admission_consulting_env import MentoringEnv
 from stable_baselines3 import PPO
 
 # Initialize Flask app
