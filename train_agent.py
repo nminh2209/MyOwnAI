@@ -1,10 +1,8 @@
-# filepath: c:\Users\ADMIN\Documents\GitHub\MyOwnAI\train_agent.py
-import gym
 from stable_baselines3 import PPO
-from mentoring_env import MentoringEnv
+from coursegenerator_env import CourseGeneratorEnv  # Import the updated environment
 
 # Create the environment
-env = MentoringEnv()
+env = CourseGeneratorEnv()
 
 # Initialize the PPO agent
 model = PPO("MlpPolicy", env, verbose=1, learning_rate=0.0001, n_steps=2048, batch_size=64)
@@ -13,4 +11,4 @@ model = PPO("MlpPolicy", env, verbose=1, learning_rate=0.0001, n_steps=2048, bat
 model.learn(total_timesteps=100000)
 
 # Save the trained model
-model.save("mentoring_agent")
+model.save("course_generator_agent")
