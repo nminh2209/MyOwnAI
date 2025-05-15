@@ -21,6 +21,9 @@ class CourseGeneratorEnv(gym.Env):
         self.state = np.array([0, 0, 0, 0, 50])  # Example initial values
         self.done = False
 
+        # Course structure to store generated content
+        self.course = []
+
     def step(self, action):
         # Apply action and update state
         if action == 0:  # Add lesson
@@ -28,20 +31,24 @@ class CourseGeneratorEnv(gym.Env):
             self.state[2] += 2  # Increase difficulty
             self.state[3] += 30  # Increase duration
             self.state[4] += 5  # Increase engagement
+            self.course.append(f"Lesson {self.state[0]}: Understanding Customer Needs")
             reward = 5
         elif action == 1:  # Add quiz
             self.state[1] += 1  # Increase number of quizzes
             self.state[2] += 3  # Increase difficulty
             self.state[3] += 20  # Increase duration
             self.state[4] += 10  # Increase engagement
+            self.course.append(f"Quiz {self.state[1]}: Test on Sales Techniques")
             reward = 7
         elif action == 2:  # Add assignment
             self.state[2] += 5  # Increase difficulty
             self.state[3] += 40  # Increase duration
             self.state[4] += 8  # Increase engagement
+            self.course.append(f"Assignment: Create a Sales Pitch")
             reward = 6
         elif action == 3:  # Add feedback session
             self.state[4] += 15  # Increase engagement
+            self.course.append("Feedback Session: Review Sales Pitch")
             reward = 4
         elif action == 4:  # Finalize course
             self.done = True
@@ -64,10 +71,15 @@ class CourseGeneratorEnv(gym.Env):
         # Reset state
         self.state = np.array([0, 0, 0, 0, 50])  # Reset to initial values
         self.done = False
+        self.course = []  # Clear the course structure
         return self.state
 
     def render(self, mode="human"):
         print(f"State: {self.state}")
+        if self.done:
+            print("Generated Course:")
+            for item in self.course:
+                print(f"- {item}")
 
 if __name__ == "__main__":
     env = CourseGeneratorEnv()
