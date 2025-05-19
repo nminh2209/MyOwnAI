@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, render_template
-from admission_consulting_env import MentoringEnv
+from admission_consulting_env import AdmissionConsultingEnv
 from stable_baselines3 import PPO
 
 # Initialize Flask app
@@ -9,7 +9,7 @@ app = Flask(__name__)
 model = PPO.load("mentoring_agent")
 
 # Initialize the environment
-env = MentoringEnv()
+env = AdmissionConsultingEnv()
 obs = env.reset()
 
 @app.route("/")
